@@ -85,6 +85,7 @@
                 alert('Please fill in all fields.');
             }
         }
+        
 
         // Function to add an edit button for each event
         function addEditButton(event, listItem) {
@@ -93,7 +94,15 @@
             editButton.classList.add('bg-blue-500', 'text-white', 'p-2', 'rounded', 'w-full', 'mt-2');
             editButton.addEventListener('click', () => redirectToEditPage(event));
             listItem.appendChild(editButton);
+
+            const joinButton = document.createElement('button');
+            joinButton.innerText = 'Join Event';
+            joinButton.classList.add('bg-green-500', 'text-white', 'p-2', 'rounded', 'w-full', 'mt-2');
+            joinButton.addEventListener('click', () => joinEvent(event));
+            listItem.appendChild(joinButton);
         }
+
+        
 
         // Function to redirect to the edit page with event details
         function redirectToEditPage(event) {
