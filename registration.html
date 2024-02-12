@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Event Platform - Registration</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <!-- Registration Page -->
+    <section class="container mx-auto mt-16 flex justify-center items-center">
+        <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Registration</h2>
+            <form id="registrationForm" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-600">Username</label>
+                    <input type="text" id="username" name="username" class="mt-1 p-2 w-full border rounded">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-600">Password</label>
+                    <input type="password" id="password" name="password" class="mt-1 p-2 w-full border rounded">
+                </div>
+                <div>
+                    <label for="confirmPassword" class="block text-sm font-medium text-gray-600">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" class="mt-1 p-2 w-full border rounded">
+                </div>
+                <button type="button" onclick="registerUser()" class="bg-blue-500 text-white p-2 rounded w-full">Register</button>
+            </form>
+            <div class="mt-4 text-center">
+                <a href="login.html" class="text-blue-500">Already have an account? Login</a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        function registerUser() {
+            const enteredUsername = document.getElementById('username').value;
+            const enteredPassword = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+
+            if (enteredPassword !== confirmPassword) {
+                alert('Passwords do not match. Please try again.');
+                return;
+            }
+
+            // In a real-world scenario, you would send the registration data to the server for processing.
+            // This is a simplified example.
+            alert(`User ${enteredUsername} registered successfully.`);
+        }
+    </script>
+
+</body>
+
+</html>

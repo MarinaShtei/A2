@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Event Platform - Create Event</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+        <!-- Link to Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places"></script>
+    <style>
+        /* Set a height for the map container */
+         #map {
+            height: 300px;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <!-- Navigation Bar -->
+    <header class="bg-blue-500 p-4 text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-semibold">Virtual Event Platform</h1>
+            <div>
+                <a href="profile.html" class="text-white">Profile</a>
+                <span class="mx-2 text-white">|</span>
+                <a href="#" onclick="logout()" class="text-white">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Event Edit Form -->
+    <section class="container mx-auto mt-8 flex justify-center items-center">
+        <div class="max-w-md mx-auto p-6 bg-white rounded-md shadow-md mt-8">
+            <h2 class="text-2xl font-semibold text-center mb-4">Event Editor</h2>
+            <!-- Form for editing event details -->
+            <form id="eventForm" class="space-y-4">
+                <div>
+                    <label for="eventName" class="block text-sm font-medium text-gray-700">Event Name:</label>
+                    <input type="text" id="eventName" name="eventName" required
+                           class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="eventDate" class="block text-sm font-medium text-gray-700">Event Date:</label>
+                    <input type="date" id="eventDate" name="eventDate" required
+                           class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="eventStartTime" class="block text-sm font-medium text-gray-700">Start Time:</label>
+                    <input type="time" id="eventStartTime" name="eventStartTime" required
+                           class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="eventEndTime" class="block text-sm font-medium text-gray-700">End Time:</label>
+                    <input type="time" id="eventEndTime" name="eventEndTime" required
+                           class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                </div>
+                <div>
+                    <label for="eventDescription" class="block text-sm font-medium text-gray-700">Event Description:</label>
+                    <textarea id="eventDescription" name="eventDescription" rows="4" required
+                              class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+                  <!-- Participants Section -->
+                  <div>
+                    <label for="participants" class="block text-sm font-medium text-gray-700">Participants:</label>
+                    <select id="participants" name="participants" multiple
+                            class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                    </select>
+                    <p class="text-xs text-gray-500">Select participants from the list.</p>
+                </div>
+
+                <!-- Selected Participants Section -->
+
+                <div id="selectedParticipantsSection" class="mt-4">
+                    <h3 class="text-lg font-semibold mb-2">Selected Participants:</h3>
+                    <ul id="selectedParticipantsList" class="list-disc list-inside">
+                        <!-- Selected participants will be displayed here -->
+                    </ul>
+                </div>
+
+                   <!-- Map Location Section -->
+                <div>
+                <label for="eventLocation" class="block text-sm font-medium text-gray-700">Event Location:</label>
+                <input type="text" id="eventLocation" name="eventLocation" placeholder="Enter event location"
+                       class="mt-1 p-2 w-full border border-gray-300 rounded-md focus:outline-none focus:ring-blue-500 focus:border-blue-500">
+                <!-- Map Container -->
+                <div id="map"></div>
+                </div>
+
+                <div>
+                    <button type="submit"
+                            class="w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:bg-blue-600">
+                        Save Event
+                    </button>
+                </div>
+            </form>
+        </div>
+    </section>
+
+
+    <script>
+        // Initialize Google Maps
+        function initMap() {
+            var mapOptions = {
+                center: { lat: 0, lng: 0 },
+                zoom: 8
+            };
+            var map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+            // Create a marker for the event location
+            var marker = new google.maps.Marker({
+                position: { lat: 0, lng: 0 },
+                map: map,
+                draggable: true // Allow marker to be dragged to select location
+            });
+
+            // Listen for marker drag events to update location input field
+            marker.addListener('dragend', function(event) {
+                document.getElementById('eventLocation').value = event.latLng.lat() + ', ' + event.latLng.lng();
+            });
+        }
+    </script>
+    <script async defer
+            src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY&libraries=places&callback=initMap">
+    </script>
+
+    <script>
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+
+        // Define the participantsInput variable and reference the <select> element
+        var participantsInput = document.getElementById('participants');
+
+        // Array of fake participant names
+        var fakeParticipants = ['John', 'Alice', 'Bob', 'Emma', 'Michael'];
+
+        // Populate participants dropdown with fake data
+        fakeParticipants.forEach(function(participant) {
+            var option = document.createElement('option');
+            option.value = participant;
+            option.textContent = participant;
+            participantsInput.appendChild(option);
+        });
+
+        // Update selected participants section
+        function updateSelectedParticipants() {
+            var selectedParticipantsList = document.getElementById('selectedParticipantsList');
+            // Clear existing content
+            selectedParticipantsList.innerHTML = '';
+
+            // Add selected participants to the list
+            selectedParticipants.forEach(function(participant) {
+                var listItem = document.createElement('li');
+                listItem.textContent = participant;
+                listItem.classList.add('mb-1', 'cursor-pointer', 'hover:text-red-500');
+                // Add click event listener to remove participant
+                listItem.addEventListener('click', function() {
+                    removeParticipant(participant);
+                });
+                selectedParticipantsList.appendChild(listItem);
+            });
+        }
+
+        // Remove participant from selected participants
+        function removeParticipant(participant) {
+            var index = selectedParticipants.indexOf(participant);
+            if (index !== -1) {
+                selectedParticipants.splice(index, 1);
+                updateSelectedParticipants(); // Update selected participants section
+            }
+        }
+
+        // Update selected participants section whenever the selection changes
+        participantsInput.addEventListener('change', function(event) {
+            var selectedOptions = event.target.selectedOptions;
+            selectedParticipants = Array.from(selectedOptions).map(option => option.value);
+            updateSelectedParticipants();
+        });
+
+        
+    </script>
+    
+
+</body>
+
+</html>
