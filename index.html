@@ -4,159 +4,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Event Platform - Create Event</title>
+    <title>Virtual Event Platform - Login</title>
     <!-- Include Tailwind CSS -->
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
 <body class="bg-gray-100 font-sans">
 
-    <!-- Navigation Bar -->
-    <header class="bg-blue-500 p-4 text-white">
-        <div class="container mx-auto flex justify-between items-center">
-            <h1 class="text-3xl font-semibold">Virtual Event Platform</h1>
-            <div>
-                <a href="chat.html" class="text-white">Chat</a>
-                <span class="mx-2 text-white">|</span>
-                <a href="profile.html" class="text-white">Profile</a>
-                <span class="mx-2 text-white">|</span>
-                <a href="#" onclick="logout()" class="text-white">Logout</a>
+    <!-- Login Page -->
+    <section class="container mx-auto mt-16 flex justify-center items-center">
+        <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Login</h2>
+            <form id="loginForm" class="space-y-4">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-600">Username</label>
+                    <input type="text" id="username" name="username" class="mt-1 p-2 w-full border rounded">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-600">Password</label>
+                    <input type="password" id="password" name="password" class="mt-1 p-2 w-full border rounded">
+                </div>
+                <button type="button" onclick="login()" class="bg-blue-500 text-white p-2 rounded w-full">Login</button>
+            </form>
+            <div class="mt-4 text-center">
+                <a href="password_recovery.html" class="text-blue-500">Forgot your password?</a>
+                <span class="mx-2 text-gray-600">|</span>
+                <a href="registration.html" class="text-blue-500">Register</a>
             </div>
         </div>
-    </header>
-
-    <!-- Event Creation Form -->
-    <section class="container mx-auto mt-8 flex justify-center items-center">
-        <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
-            <h2 class="text-2xl font-semibold mb-6 text-center">Create an Event</h2>
-            <form id="eventForm" class="space-y-4">
-                <div>
-                    <label for="eventName" class="block text-sm font-medium text-gray-600">Event Name</label>
-                    <input type="text" id="eventName" name="eventName" class="mt-1 p-2 w-full border rounded">
-                </div>
-                <div>
-                    <label for="eventDate" class="block text-sm font-medium text-gray-600">Event Date</label>
-                    <input type="date" id="eventDate" name="eventDate" class="mt-1 p-2 w-full border rounded">
-                </div>
-                <div>
-                    <label for="eventTime" class="block text-sm font-medium text-gray-600">Event Time</label>
-                    <input type="time" id="eventTime" name="eventTime" class="mt-1 p-2 w-full border rounded">
-                </div>
-                <button type="button" onclick="addEvent()" class="bg-blue-500 text-white p-2 rounded w-full">Create Event</button>
-            </form>
-        </div>
-    </section>
-
-    <!-- Display Events -->
-    <section id="eventList" class="container mx-auto mt-8">
-        <h2 class="text-2xl font-semibold mb-4">Event List</h2>
-        <ul id="eventListView" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            <!-- Events will be dynamically added here using JavaScript -->
-        </ul>
     </section>
 
     <script>
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
-        }
-
-        // Fake data for illustration
-        const fakeEvents = [
-            { name: "Conference A", date: "2024-02-15", time: "14:00" },
-            { name: "Workshop B", date: "2024-03-10", time: "10:30" },
-            { name: "Networking Event", date: "2024-04-05", time: "18:00" }
+        const users = [
+            { username: "user123", password: "pass123", displayName: "John Doe" ,
+            username: "nastya", password: "123", displayName: "Nastya"},
+            // Add more user data as needed
         ];
 
-        // Function to add an event and update the list
-        function addEvent() {
-            const eventName = document.getElementById('eventName').value;
-            const eventDate = document.getElementById('eventDate').value;
-            const eventTime = document.getElementById('eventTime').value;
+        function login() {
+            const enteredUsername = document.getElementById('username').value;
+            const enteredPassword = document.getElementById('password').value;
 
-            if (eventName && eventDate && eventTime) {
-                const formattedDate = new Date(eventDate).toLocaleDateString('en-US');
-                const formattedTime = new Date(`1970-01-01T${eventTime}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+            const user = users.find(u => u.username === enteredUsername && u.password === enteredPassword);
 
-                const event = { name: eventName, date: formattedDate, time: formattedTime };
-                fakeEvents.push(event);
-                displayEvents();
+            if (user) {
+                localStorage.setItem('currentUser', JSON.stringify(user));
+                window.location.href = 'index.html';
             } else {
-                alert('Please fill in all fields.');
+                alert('Invalid username or password. Please try again.');
             }
         }
-        
-
-        // Function to add an edit button for each event
-        function addEditButton(event, listItem) {
-            const editButton = document.createElement('button');
-            editButton.innerText = 'Edit';
-            editButton.classList.add('bg-blue-500', 'text-white', 'p-2', 'rounded', 'w-full', 'mt-2');
-            editButton.addEventListener('click', () => redirectToEditPage(event));
-            listItem.appendChild(editButton);
-
-            const joinButton = document.createElement('button');
-            joinButton.innerText = 'Join Event';
-            joinButton.classList.add('bg-green-500', 'text-white', 'p-2', 'rounded', 'w-full', 'mt-2');
-            joinButton.addEventListener('click', () => joinEvent(event));
-            listItem.appendChild(joinButton);
-        }
-
-        
-
-        // Function to redirect to the edit page with event details
-        function redirectToEditPage(event) {
-            // Replace this URL with the actual edit page URL and append event details as query parameters
-            const editPageURL = `eventManagement.html?eventName=${encodeURIComponent(event.name)}&eventDate=${encodeURIComponent(event.date)}&eventTime=${encodeURIComponent(event.time)}`;
-            window.location.href = editPageURL;
-        }
-
-        // Function to display events dynamically
-        function displayEvents() {
-            const eventListView = document.getElementById('eventListView');
-            eventListView.innerHTML = ""; // Clear existing content
-
-            fakeEvents.forEach(event => {
-                const listItem = document.createElement('li');
-                listItem.className = "bg-white p-4 rounded-lg shadow-md";
-                listItem.innerHTML = `
-                    <h3 class="text-lg font-semibold mb-2">${event.name}</h3>
-                    <p class="text-sm text-gray-600">Date: ${event.date}</p>
-                    <p class="text-sm text-gray-600">Time: ${event.time}</p>
-                `;
-                addEditButton(event, listItem); // Add edit button
-                eventListView.appendChild(listItem);
-            });
-        }
-
-        // Initial display of events
-        displayEvents();
-
-                // custom config for the MTW app 
-        const mtwAppConfig = {
-            border: true // app border in the MTW page                    
-        }
-
-        ///////////////////////////////////////////////////////
-        // implement this functions in order to use private API        
-        const sendPrivateApiRequest = async () => {
-            // your code here:
-            // sendRequestToParent({ cat: 'getAssets' })
-        }        
-
-        const acceptPrivateApiResponse = async (data) => {
-            // process received data here:
-            // console.log(data)
-        }
-
-        // use this in order to send on document load
-        document.addEventListener('DOMContentLoaded', () => {
-            // your code here:
-            //sendRequestToParent({ method: 'getAssets' })
-        })
     </script>
-
-    <script src="https://morethanwallet.com/appstore/index.js"></script>
 
 </body>
 
