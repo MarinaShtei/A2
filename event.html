@@ -1,21 +1,19 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Virtual Event Platform - Create Event</title>
-    <!-- Include Tailwind CSS -->
+    <title>Virtual Event Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/realm-web@latest/dist/bundle.iife.js"></script>
 </head>
-
 <body class="bg-gray-100 font-sans">
-
     <!-- Navigation Bar -->
     <header class="bg-blue-500 p-4 text-white">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-3xl font-semibold">Virtual Event Platform</h1>
             <div>
+                <span id="userGreeting" class="mr-4">Hello, User</span> <!-- Placeholder for dynamic username -->
                 <a href="chat.html" class="text-white">Chat</a>
                 <span class="mx-2 text-white">|</span>
                 <a href="profile.html" class="text-white">Profile</a>
@@ -25,9 +23,30 @@
         </div>
     </header>
 
-    <!-- Event Creation Form -->
-    <section class="container mx-auto mt-8 flex justify-center items-center">
-        <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+    <!-- Main Content -->
+    <div class="container mx-auto mt-8 flex">
+        <!-- Calendar Display -->
+        <div class="flex-auto w-1/2 mr-8 bg-white shadow-lg rounded-lg">
+            <div class="flex justify-between items-center p-4 border-b">
+                <button id="prevMonth" class="px-4 py-2 bg-gray-200 rounded-md">Prev</button>
+                <h2 id="monthYear" class="text-2xl font-semibold"></h2>
+                <button id="nextMonth" class="px-4 py-2 bg-gray-200 rounded-md">Next</button>
+            </div>
+            <div class="grid grid-cols-7 gap-4 p-4">
+                <div class="text-center font-semibold">Sun</div>
+                <div class="text-center font-semibold">Mon</div>
+                <div class="text-center font-semibold">Tue</div>
+                <div class="text-center font-semibold">Wed</div>
+                <div class="text-center font-semibold">Thu</div>
+                <div class="text-center font-semibold">Fri</div>
+                <div class="text-center font-semibold">Sat</div>
+                <div id="calendarDays" class="col-span-7 grid grid-cols-7 gap-4"></div>
+            </div>
+            <div id="eventInfo" class="p-4"></div>
+        </div>
+
+        <!-- Event Creation Form -->
+        <div class="flex-auto w-1/2 bg-white p-8 rounded-lg shadow-md">
             <h2 class="text-2xl font-semibold mb-6 text-center">Create an Event</h2>
             <form id="eventForm" class="space-y-4">
                 <div>
@@ -42,10 +61,21 @@
                     <label for="eventTime" class="block text-sm font-medium text-gray-600">Event Time</label>
                     <input type="time" id="eventTime" name="eventTime" class="mt-1 p-2 w-full border rounded">
                 </div>
+                <div>
+                    <label for="addUsersToggle" class="inline-flex items-center mt-3">
+                        <input type="checkbox" id="addUsersToggle" class="form-checkbox h-5 w-5 text-gray-600"><span class="ml-2 text-gray-700">Add Users to Event</span>
+                    </label>
+                </div>
+                <div id="usersSelectDiv" class="hidden">
+                    <label for="usersSelect" class="block text-sm font-medium text-gray-600">Select Attendees</label>
+                    <div id="usersCheckboxList" class="hidden mt-1 p-2 w-full border rounded">
+                        <!-- Checkboxes and labels for user selection will be dynamically added here -->
+                    </div>
+                </div>
                 <button type="button" onclick="addEvent()" class="bg-blue-500 text-white p-2 rounded w-full">Create Event</button>
             </form>
         </div>
-    </section>
+    </div>
 
     <!-- Display Events -->
     <section id="eventList" class="container mx-auto mt-8">
@@ -55,109 +85,12 @@
         </ul>
     </section>
 
-    <script>
-        function logout() {
-            localStorage.removeItem('currentUser');
-            window.location.href = 'login.html';
-        }
+    <!-- Pagination Controls -->
+    <div class="container mx-auto mt-4 flex justify-center items-center">
+        <button id="prevPage" class="bg-blue-500 text-white p-2 rounded mx-2" onclick="changePage(-1)">Previous</button>
+        <button id="nextPage" class="bg-blue-500 text-white p-2 rounded mx-2" onclick="changePage(1)">Next</button>
+    </div>
 
-        // Fake data for illustration
-        const fakeEvents = [
-            { name: "Conference A", date: "2024-02-15", time: "14:00" },
-            { name: "Workshop B", date: "2024-03-10", time: "10:30" },
-            { name: "Networking Event", date: "2024-04-05", time: "18:00" }
-        ];
-
-        // Function to add an event and update the list
-        function addEvent() {
-            const eventName = document.getElementById('eventName').value;
-            const eventDate = document.getElementById('eventDate').value;
-            const eventTime = document.getElementById('eventTime').value;
-
-            if (eventName && eventDate && eventTime) {
-                const formattedDate = new Date(eventDate).toLocaleDateString('en-US');
-                const formattedTime = new Date(`1970-01-01T${eventTime}`).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
-
-                const event = { name: eventName, date: formattedDate, time: formattedTime };
-                fakeEvents.push(event);
-                displayEvents();
-            } else {
-                alert('Please fill in all fields.');
-            }
-        }
-        
-
-        // Function to add an edit button for each event
-        function addEditButton(event, listItem) {
-            const editButton = document.createElement('button');
-            editButton.innerText = 'Edit';
-            editButton.classList.add('bg-blue-500', 'text-white', 'p-2', 'rounded', 'w-full', 'mt-2');
-            editButton.addEventListener('click', () => redirectToEditPage(event));
-            listItem.appendChild(editButton);
-
-            const joinButton = document.createElement('button');
-            joinButton.innerText = 'Join Event';
-            joinButton.classList.add('bg-green-500', 'text-white', 'p-2', 'rounded', 'w-full', 'mt-2');
-            joinButton.addEventListener('click', () => joinEvent(event));
-            listItem.appendChild(joinButton);
-        }
-
-        
-
-        // Function to redirect to the edit page with event details
-        function redirectToEditPage(event) {
-            // Replace this URL with the actual edit page URL and append event details as query parameters
-            const editPageURL = `eventManagement.html?eventName=${encodeURIComponent(event.name)}&eventDate=${encodeURIComponent(event.date)}&eventTime=${encodeURIComponent(event.time)}`;
-            window.location.href = editPageURL;
-        }
-
-        // Function to display events dynamically
-        function displayEvents() {
-            const eventListView = document.getElementById('eventListView');
-            eventListView.innerHTML = ""; // Clear existing content
-
-            fakeEvents.forEach(event => {
-                const listItem = document.createElement('li');
-                listItem.className = "bg-white p-4 rounded-lg shadow-md";
-                listItem.innerHTML = `
-                    <h3 class="text-lg font-semibold mb-2">${event.name}</h3>
-                    <p class="text-sm text-gray-600">Date: ${event.date}</p>
-                    <p class="text-sm text-gray-600">Time: ${event.time}</p>
-                `;
-                addEditButton(event, listItem); // Add edit button
-                eventListView.appendChild(listItem);
-            });
-        }
-
-        // Initial display of events
-        displayEvents();
-
-                // custom config for the MTW app 
-        const mtwAppConfig = {
-            border: true // app border in the MTW page                    
-        }
-
-        ///////////////////////////////////////////////////////
-        // implement this functions in order to use private API        
-        const sendPrivateApiRequest = async () => {
-            // your code here:
-            // sendRequestToParent({ cat: 'getAssets' })
-        }        
-
-        const acceptPrivateApiResponse = async (data) => {
-            // process received data here:
-            // console.log(data)
-        }
-
-        // use this in order to send on document load
-        document.addEventListener('DOMContentLoaded', () => {
-            // your code here:
-            //sendRequestToParent({ method: 'getAssets' })
-        })
-    </script>
-
-    <script src="https://morethanwallet.com/appstore/index.js"></script>
-
+    <script src="event.js"></script>
 </body>
-
 </html>

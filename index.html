@@ -34,28 +34,8 @@
         </div>
     </section>
 
-    <script>
-        const users = [
-            { username: "user123", password: "pass123", displayName: "John Doe" ,
-            username: "nastya", password: "123", displayName: "Nastya"},
-            // Add more user data as needed
-        ];
-
-        function login() {
-            const enteredUsername = document.getElementById('username').value;
-            const enteredPassword = document.getElementById('password').value;
-
-            const user = users.find(u => u.username === enteredUsername && u.password === enteredPassword);
-
-            if (user) {
-                localStorage.setItem('currentUser', JSON.stringify(user));
-                window.location.href = 'index.html';
-            } else {
-                alert('Invalid username or password. Please try again.');
-            }
-        }
-    </script>
-
+    <script src="index.js"></script>
+    <script src="https://unpkg.com/realm-web/dist/bundle.iife.js"></script>
 </body>
 
 </html>
