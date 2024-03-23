@@ -1,7 +1,7 @@
 import { useState } from "preact/hooks"
 import { App, Credentials } from "realm-web"
 //import Event from "./event";
-import Register from "./register";
+import Registration from "./Registration";
 
 // Replace 'application-0-rbrbg' with your actual MongoDB Realm App ID
 const app = new App({ id: "application-0-rbrbg" })
@@ -30,7 +30,7 @@ const Login = () => {
                 // Proceed with storing user information or redirecting
                 localStorage.setItem("loggedInUsername", username)
                 // Redirecting to a different page on successful login for the purpose of this example
-                window.location.href = "event.js" // Change 'event.html' to your intended route
+                window.location.href = "/events"
             } else {
                 throw new Error("Invalid username or password.")
             }
@@ -73,7 +73,7 @@ const Login = () => {
                         Forgot your password?
                     </a>
                     <span class="mx-2 text-sm text-gray-600">|</span>
-                    <a href="register.js" class="text-sm text-blue-500 hover:underline">
+                    <a href="/registration" class="text-sm text-blue-500 hover:underline">
                         Register
                     </a>
                 </div>
