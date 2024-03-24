@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Virtual Event Platform - Chat</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gray-100 font-sans">
+
+    <!-- Navigation Bar -->
+    <header class="bg-blue-500 p-4 text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <h1 class="text-3xl font-semibold">Virtual Event Platform</h1>
+            <div>
+                <a href="profile.html" class="text-white">Profile</a>
+                <span class="mx-2 text-white">|</span>
+                <a href="#" onclick="logout()" class="text-white">Logout</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Chat Interface -->
+    <section class="container mx-auto mt-8 flex justify-center items-center">
+        <div class="w-full max-w-md bg-white p-8 rounded-lg shadow-md">
+            <h2 class="text-2xl font-semibold mb-6 text-center">Chat Room</h2>
+            <div id="chatMessages" class="overflow-y-auto max-h-48"></div>
+            <div class="mt-4">
+                <input type="text" id="messageInput" class="w-full p-2 border rounded">
+                <button type="button" onclick="sendMessage()" class="mt-2 bg-blue-500 text-white p-2 rounded w-full">Send Message</button>
+            </div>
+        </div>
+    </section>
+
+    <!-- JavaScript Section -->
+    <script>
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+
+            if (message !== '') {
+                const time = new Date().toLocaleTimeString();
+                displayMessage({ user: 'You', message, time });
+
+                // Clear the input field
+                messageInput.value = '';
+            }
+        }
+
+        function displayMessage(data) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageElement = document.createElement('div');
+            messageElement.className = 'mb-2';
+            messageElement.textContent = `${data.user} (${data.time}): ${data.message}`;
+            chatMessages.appendChild(messageElement);
+
+            // Scroll to the bottom to show the latest messages
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function logout() {
+            localStorage.removeItem('currentUser');
+            window.location.href = 'login.html';
+        }
+    </script>
+
+</body>
+
+</html>
