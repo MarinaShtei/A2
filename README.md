@@ -15,4 +15,4 @@ password
 
 usename and password for mongoDB: usename: forProjectSummer23@gmail.com password: braude123 
 
-preact vertion: https://a2-tree-main-preact.vercel.app/
+project documentetion: https://docs.google.com/document/d/1Ul1sR0tpBXHWzAMycprczseAwRpcWVoGgDj-A6Gj_0g/edit
