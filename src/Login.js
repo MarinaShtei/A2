@@ -1,7 +1,5 @@
 import { useState } from "preact/hooks"
 import { App, Credentials } from "realm-web"
-//import Event from "./event";
-import Registration from "./Registration";
 
 //mongodb auth
 const app = new App({ id: "application-0-rbrbg" })
