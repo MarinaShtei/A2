@@ -2,7 +2,6 @@ import { useState } from "preact/hooks";
 import { Link } from 'preact-router/match';
 import { App as RealmApp, Credentials } from "realm-web";
 
-// Replace 'application-0-rbrbg' with your actual MongoDB Realm App ID
 const app = new RealmApp({ id: "application-0-rbrbg" });
 
 const Registration = () => {
@@ -25,9 +24,8 @@ const Registration = () => {
 
             await usersCollection.insertOne({
                 username,
-                password, // Remember, storing passwords in plain text is unsafe
+                password,
             });
-
             // Show success modal
             setShowSuccessModal(true);
         } catch (err) {

@@ -3,7 +3,7 @@ import { App, Credentials } from "realm-web"
 //import Event from "./event";
 import Registration from "./Registration";
 
-// Replace 'application-0-rbrbg' with your actual MongoDB Realm App ID
+//mongodb auth
 const app = new App({ id: "application-0-rbrbg" })
 
 const Login = () => {
@@ -13,23 +13,23 @@ const Login = () => {
 
     const login = async () => {
         try {
-            // Using anonymous credentials for the example
+            // Using anonymous credentials
             const credentials = Credentials.anonymous()
             const anonymousUser = await app.logIn(credentials)
             console.log("Successfully logged in anonymously", anonymousUser)
 
-            // Access your MongoDB database
+            // Pulling data from MongoDB 
             const mongodb = anonymousUser.mongoClient("mongodb-atlas")
             const usersCollection = mongodb.db("webProject").collection("users")
 
-            // Query the collection for the username and password
+            // Querying the collection for the username and password
             const user = await usersCollection.findOne({ username: username, password: password }) // In a real scenario, consider hashing
 
             if (user) {
                 console.log("Login successful for user:", user.username)
-                // Proceed with storing user information or redirecting
+                // saving username in local storage
                 localStorage.setItem("loggedInUsername", username)
-                // Redirecting to a different page on successful login for the purpose of this example
+                // Redirecting to a different page on successful login
                 window.location.href = "/events"
             } else {
                 throw new Error("Invalid username or password.")

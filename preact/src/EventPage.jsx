@@ -3,8 +3,7 @@ import { useState, useEffect } from 'preact/hooks';
 import { App as RealmApp, Credentials } from "realm-web";
 import { route } from 'preact-router';
 
-// Initialize your Realm app
-const app = new RealmApp({ id: "application-0-rbrbg" }); // Replace with your actual App ID
+const app = new RealmApp({ id: "application-0-rbrbg" });
 
 
 const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -37,22 +36,22 @@ const EventPage = () => {
       displayEvents(user);
       generateCalendarDays(currentYear, currentMonth);
   
-      // Fetch all users excluding the current one for attendee selection
+      // Fetch all users excluding the current one
       const mongodb = user.mongoClient("mongodb-atlas");
       const usersCollection = mongodb.db("webProject").collection("users");
       const fetchedUsers = await usersCollection.find({});
-      const filteredUsers = fetchedUsers.filter(u => u._id !== user.id); // Assuming _id is the user identifier
+      const filteredUsers = fetchedUsers.filter(u => u._id !== user.id); 
       setAllUsers(filteredUsers);
     }
     init();
-  }, [events, currentMonth, currentYear]); // Re-run when month or year changes if needed
+  }, [events, currentMonth, currentYear]);
 
   
   const generateCalendarDays = (year, month) => {
     const numDays = new Date(year, month + 1, 0).getDate();
     const firstDay = new Date(year, month, 1).getDay();
   
-    const calendarDays = Array.from({ length: firstDay }, () => null); // Fill initial days
+    const calendarDays = Array.from({ length: firstDay }, () => null); 
   
     const username = localStorage.getItem('loggedInUsername');
   
@@ -78,7 +77,6 @@ const EventPage = () => {
   
 
   const displayEvents = async (user) => {
-    // Assuming you've handled MongoDB setup to fetch events
     const mongodb = user.mongoClient("mongodb-atlas");
     const eventsCollection = mongodb.db("webProject").collection("events");
     const fetchedEvents = await eventsCollection.find({});
@@ -103,13 +101,13 @@ const EventPage = () => {
           date: eventDate,
           time: eventTime,
           username: localStorage.getItem('loggedInUsername'), // Organizer's username
-          attendees: selectedUsers, // This now correctly includes usernames
+          attendees: selectedUsers,
         });
   
-      // Reset form and states, then re-fetch and update events
+      // Reset form and states,  fetch again and update events
       resetFormAndStates();
       await fetchAndUpdateEvents();
-      // Re-generate calendar days for the current month to reflect the new event
+      // Generate calendar days for the current month
       generateCalendarDays(currentYear, currentMonth);
     } catch (error) {
       console.error("Error creating event:", error);
@@ -154,7 +152,7 @@ const EventPage = () => {
   const handleUserSelection = (userId) => {
     // Find the username corresponding to the userId
     const user = allUsers.find(user => user._id === userId);
-    if (!user) return; // Early exit if user not found
+    if (!user) return; // exit if user not found
   
     setSelectedUsers(prevSelected => {
       if (prevSelected.includes(user.username)) {
@@ -184,7 +182,7 @@ const EventPage = () => {
     // Reset component states
     setSelectedUsers([]);
     setShowAttendeesSelection(false);
-    setShowSuccessModal(true); // Optionally show a success message/modal
+    setShowSuccessModal(true); // show a success message/modal
   };
 
   const fetchAndUpdateEvents = async () => {
@@ -192,7 +190,6 @@ const EventPage = () => {
     const eventsCollection = mongodb.db("webProject").collection("events");
     const fetchedEvents = await eventsCollection.find({});
     setEvents(fetchedEvents);
-    // No need to call generateCalendarDays here directly as useEffect will handle it
   };
 
   const handleDeleteEvent = async (eventId) => {
@@ -209,7 +206,7 @@ const EventPage = () => {
 
   const handleEditEvent = (eventName) => {
     localStorage.setItem('currentEventName', eventName);
-    route('/edit-event'); // Navigate to the EditEvent page
+    route('/edit-event'); // EditEvent page
   };
 
   return (

@@ -3,7 +3,6 @@ import { useState, useEffect } from 'preact/hooks';
 import { route } from 'preact-router';
 import { App as RealmApp, Credentials } from "realm-web";
 
-// Assuming the RealmApp is initialized similarly
 const app = new RealmApp({ id: "application-0-rbrbg" });
 
 const EditEvent = () => {
@@ -85,7 +84,7 @@ const EditEvent = () => {
 
   const handleCancel = () => {
     localStorage.removeItem('currentEvent');
-    route('/events'); // Use 'route' for navigation in preact-router
+    route('/events');
   };
 
   const handleAttendeeChange = (username, isSelected) => {
