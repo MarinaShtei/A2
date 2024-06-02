@@ -3,9 +3,11 @@ import { useState, useEffect } from 'preact/hooks';
 import { route } from 'preact-router';
 import { App as RealmApp, Credentials } from "realm-web";
 
+// initialize the realm app with the application id
 const app = new RealmApp({ id: "application-0-rbrbg" });
 
 const EditEvent = () => {
+  // state management for event details and attendees
   const [eventName, setEventName] = useState('');
   const [eventDate, setEventDate] = useState('');
   const [eventTime, setEventTime] = useState('');
@@ -14,38 +16,41 @@ const EditEvent = () => {
   const [eventId, setEventId] = useState('');
 
   useEffect(() => {
+    // retrieve the current event name from local storage
     const currentEventName = localStorage.getItem('currentEventName');
     console.log(currentEventName)
     if (!currentEventName) {
-      console.error("No event name found in local storage");
-      route('/events'); // Redirect back if event name is not found
+      console.error("no event name found in local storage");
+      route('/events'); // redirect back if event name is not found
       return;
     }
 
     const fetchData = async () => {
       try {
+        // log in anonymously to mongodb realm
         const user = await app.logIn(Credentials.anonymous());
         const mongodb = user.mongoClient("mongodb-atlas");
         const eventsCollection = mongodb.db("webProject").collection("events");
 
-        // Use the event name to fetch the event data
+        // use the event name to fetch the event data
         const event = await eventsCollection.findOne({ name: currentEventName });
         if(event) {
+          // set state with event details if found
           setEventName(event.name);
           setEventDate(event.date);
           setEventTime(event.time);
           setAttendees(event.attendees);
           setEventId(event._id);
-          // Fetch all users excluding the current one
+          // fetch all users excluding the current one
           const usersCollection = mongodb.db("webProject").collection("users");
           const users = await usersCollection.find({});
           setAllUsers(users.map(user => user.username).filter(username => username !== localStorage.getItem("loggedInUsername")));
         } else {
-          console.error("Event not found");
-          route('/events'); // Redirect back if event is not found
+          console.error("event not found");
+          route('/events'); // redirect back if event is not found
         }
       } catch (error) {
-        console.error("Failed to fetch event or user data:", error);
+        console.error("failed to fetch event or user data:", error);
       }
     };
 
@@ -54,7 +59,7 @@ const EditEvent = () => {
 
   const handleSave = async () => {
     if (!eventId) {
-      alert('Event ID is missing.');
+      alert('event id is missing.');
       return;
     }
   
@@ -62,6 +67,7 @@ const EditEvent = () => {
       const mongodb = app.currentUser.mongoClient("mongodb-atlas");
       const eventsCollection = mongodb.db("webProject").collection("events");
   
+      // update the event details in the database
       await eventsCollection.updateOne(
         { _id: eventId },
         {
@@ -74,20 +80,23 @@ const EditEvent = () => {
         }
       );
   
-      localStorage.removeItem('currentEventName'); // Cleanup after saving
-      route('/events'); // Navigate back to the main page or event list
+      // clean up local storage and navigate back to the main page
+      localStorage.removeItem('currentEventName'); 
+      route('/events'); 
     } catch (error) {
-      console.error("Failed to update the event:", error);
+      console.error("failed to update the event:", error);
     }
   };
   
 
   const handleCancel = () => {
+    // remove current event from local storage and navigate back
     localStorage.removeItem('currentEvent');
     route('/events');
   };
 
   const handleAttendeeChange = (username, isSelected) => {
+    // update the list of attendees based on user selection
     if (isSelected) {
       setAttendees(prev => [...prev, username]);
     } else {

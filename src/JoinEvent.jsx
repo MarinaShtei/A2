@@ -3,44 +3,53 @@ import { useState, useEffect } from 'preact/hooks';
 import { route } from 'preact-router';
 import { App as RealmApp, Credentials } from "realm-web";
 
+// initialize the realm app with the application id for authentication
 const app = new RealmApp({ id: "application-0-rbrbg" });
 
 const JoinEvent = () => {
+  // state management for messages and the content of the new message being composed
   const [messages, setMessages] = useState([]);
   const [messageContent, setMessageContent] = useState('');
+  // retrieve the current event name and logged-in username from local storage
   const eventName = localStorage.getItem('currentEventName');
   const username = localStorage.getItem('loggedInUsername');
 
   useEffect(() => {
+    // fetch messages when the component mounts or the event name changes
     fetchMessages();
   }, [eventName]);
 
   const fetchMessages = async () => {
     if (!eventName) {
-      console.error("No event name found in local storage");
-      route('/events');
+      // if no event name is found in local storage, log an error and redirect to events list
+      console.error("no event name found in local storage");
+      route('/events'); // redirect to events list if event name is not found
       return;
     }
 
     try {
+      // log in anonymously to mongodb realm for accessing the database
       const user = await app.logIn(Credentials.anonymous());
       const mongodb = user.mongoClient("mongodb-atlas");
       const messagesCollection = mongodb.db("webProject").collection("messages");
 
+      // fetch messages related to the current event and sort them by timestamp
       const relatedMessages = await messagesCollection.find({ eventName });
       setMessages(relatedMessages.sort((a, b) => a.timestamp - b.timestamp));
     } catch (error) {
-      console.error("Failed to fetch messages:", error);
+      // log an error message if fetching messages fails
+      console.error("failed to fetch messages:", error);
     }
   };
 
   const sendMessage = async () => {
-    if (messageContent.trim() === '') return;
+    if (messageContent.trim() === '') return; // prevent sending empty messages
 
     try {
       const mongodb = app.currentUser.mongoClient("mongodb-atlas");
       const messagesCollection = mongodb.db("webProject").collection("messages");
 
+      // insert a new message into the messages collection with the current timestamp
       await messagesCollection.insertOne({
         eventName,
         sender: username,
@@ -48,15 +57,18 @@ const JoinEvent = () => {
         timestamp: new Date()
       });
 
+      // clear the message input field and refresh the list of messages
       setMessageContent('');
       fetchMessages();
     } catch (error) {
-      console.error("Failed to send message:", error);
+      // log an error message if sending the message fails
+      console.error("failed to send message:", error);
     }
   };
 
   const leaveEvent = () => {
-    route('/events'); // Navigate back to the events list
+    // navigate back to the events list page
+    route('/events');
   };
 
   return (

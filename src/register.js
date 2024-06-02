@@ -1,38 +1,48 @@
 import { useState } from "preact/hooks";
 import { App, Credentials } from "realm-web";
 
+// Register component to handle user registration
 const Register = () => {
+    // State management for username, password, and confirm password
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
     const [confirmPassword, setConfirmPassword] = useState("");
 
+    // Function to handle user registration
     const registerUser = async () => {
         try {
+            // Initialize Realm app with application ID
             const app = new App({ id: "application-0-rbrbg" });
+
+            // Log in anonymously to MongoDB Realm
             const credentials = Credentials.anonymous();
             const user = await app.logIn(credentials);
 
+            // Access MongoDB collection for users
             const mongodb = user.mongoClient("mongodb-atlas");
             const usersCollection = mongodb.db("webProject").collection("users");
 
+            // Check if passwords match before proceeding
             if (password !== confirmPassword) {
                 alert("Passwords do not match. Please try again.");
                 return;
             }
 
+            // Insert new user document into the users collection
             await usersCollection.insertOne({
                 username: username,
                 password: password
             });
 
-            // Show success modal
+            // Show success modal to the user upon successful registration
             document.getElementById("successModal").style.display = "block";
 
-            // Redirect to login page after successful registration
+            // Redirect to the login page after the user acknowledges the success modal
             document.getElementById("okButton").onclick = function() {
                 window.location.href = "index.html"; // Change to your login page
             };
         } catch (err) {
+            // Handle registration errors and alert the user
             console.error("Failed to register user:", err);
             alert("Registration failed. Please try again.");
         }
